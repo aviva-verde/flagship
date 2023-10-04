@@ -11,6 +11,7 @@ import (
 	"github.com/joerdav/flagship/cmd/flagship/feature"
 	"github.com/joerdav/flagship/cmd/flagship/hashcmd"
 	"github.com/joerdav/flagship/cmd/flagship/lscmd"
+	"github.com/joerdav/flagship/cmd/flagship/throttle"
 	"github.com/joerdav/flagship/internal/dynamostore"
 )
 
@@ -86,6 +87,10 @@ func run() error {
 			"enable":  feature.Enable{Store: store},
 			"disable": feature.Disable{Store: store},
 			"rm":      feature.Rm{Store: store},
+		}),
+		"throttle": newParentCommand("sub", map[string]command{
+			"get": throttle.Get{Store: store, Out: os.Stdout},
+			"set": throttle.SetPercentage{Store: store, Out: os.Stdout},
 		}),
 	}
 	cmdl := []string{}

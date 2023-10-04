@@ -67,6 +67,22 @@ func (s *DynamoStore) SetFeature(ctx context.Context, feature string, value bool
 	})
 	return err
 }
+func (s *DynamoStore) SetThrottleProbability(ctx context.Context, throttle string, value string) error {
+	_, err := s.Client.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"_pk": &types.AttributeValueMemberS{Value: s.Record},
+		},
+		TableName:        &s.TableName,
+		UpdateExpression: aws.String("SET throttles.#t.probability = :c"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":c": &types.AttributeValueMemberN{Value: value},
+		},
+		ExpressionAttributeNames: map[string]string{
+			"#t": throttle,
+		},
+	})
+	return err
+}
 func (s *DynamoStore) Load(ctx context.Context) (models.Features, map[string]models.ThrottleConfig, error) {
 	gio, err := s.Client.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &s.TableName,
